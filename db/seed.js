@@ -1,4 +1,4 @@
-const { client, getAllUsers, createUser } = require("./index");
+const { client, getAllUsers, createUser, updateUser } = require("./index");
 
 async function dropTables() {
   try {
@@ -23,7 +23,10 @@ async function createTables() {
     CREATE TABLE users (
       id SERIAL PRIMARY KEY,
       username varchar(255) UNIQUE NOT NULL,
-      password varchar(255) NOT NULL
+      password varchar(255) NOT NULL,
+      name varchar(255) NOT NULL,
+      location varchar(255) NOT NULL,
+      active BOOLEAN DEFAULT true
       );
       `);
 
@@ -41,6 +44,21 @@ async function createInitialUsers() {
     const albert = await createUser({
       username: "albert",
       password: "bertie99",
+      name: "albert wilde",
+      location: "Japan",
+    });
+
+    await createUser({
+      username: "sandra",
+      password: "2sandy4me",
+      name: "sandra yugi",
+      location: "canada",
+    });
+    await createUser({
+      username: "glamgal",
+      password: "soglam",
+      name: "glammy glam",
+      location: "brazil",
     });
 
     console.log("this is our USER:", albert);
@@ -69,7 +87,11 @@ async function testDB() {
 
     const users = await getAllUsers();
     console.log("getAllUsers:", users);
-
+    const updatedUser = await updateUser(2, {
+      name: "johnny",
+      location: "brazil",
+    });
+    console.log("this is updated user", updatedUser);
     console.log("Finished database tests!");
   } catch (error) {
     console.error("Error testing database!");
