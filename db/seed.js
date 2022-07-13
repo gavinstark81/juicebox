@@ -1,10 +1,19 @@
-const { client, getAllUsers, createUser, updateUser } = require("./index");
+// nodes version of "importing"
+const {
+  client,
+  getAllUsers,
+  createUser,
+  updateUser,
+  createPost,
+} = require("./index");
 
+// dropping tables function
 async function dropTables() {
   try {
     console.log("Starting to drop tables...");
 
     await client.query(`
+    DROP TABLE IF EXISTS posts;
     DROP TABLE IF EXISTS users;
     `);
 
@@ -15,6 +24,7 @@ async function dropTables() {
   }
 }
 
+// create tables function
 async function createTables() {
   try {
     console.log("Starting to build tables...");
@@ -37,6 +47,7 @@ async function createTables() {
   }
 }
 
+// function for creating initial users
 async function createInitialUsers() {
   try {
     console.log("Starting to create users...");
@@ -61,7 +72,7 @@ async function createInitialUsers() {
       location: "brazil",
     });
 
-    console.log("this is our USER:", albert);
+    // console.log("this is our USER:", albert); // logging albert as test user
 
     console.log("Finished creating users!");
   } catch (error) {
@@ -69,6 +80,8 @@ async function createInitialUsers() {
     throw error;
   }
 }
+
+// function for rebuild testing
 async function rebuildDB() {
   try {
     client.connect();
@@ -81,17 +94,24 @@ async function rebuildDB() {
   }
 }
 
+// function for testing
 async function testDB() {
   try {
     console.log("Starting to test database...");
 
     const users = await getAllUsers();
     console.log("getAllUsers:", users);
-    const updatedUser = await updateUser(2, {
-      name: "johnny",
-      location: "brazil",
+    // const updatedUser = await updateUser(2, {
+    //   name: "johnny",
+    //   location: "brazil",
+    // });
+    const newPost = await createPost({
+      authorId: 1,
+      title: "BestTitleEver",
+      content: "very descriptive content for describing descriptions.",
     });
-    console.log("this is updated user", updatedUser);
+    console.log("this is the new post", newPost);
+    // console.log("this is updated user", updatedUser);
     console.log("Finished database tests!");
   } catch (error) {
     console.error("Error testing database!");
