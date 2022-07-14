@@ -1,7 +1,7 @@
 const { Client } = require("pg");
 const client = new Client("postgres://localhost:5432/juicebox-dev");
 
-// creating posts function (NEEDS FIXING STILL)
+// creating posts function
 async function createPost({ authorId, title, content }) {
   try {
     const {
@@ -43,6 +43,15 @@ async function createUser({ username, password, name, location }) {
   }
 }
 
+// helper function for getting all posts
+async function getAllPosts() {
+  const { rows } = await client.query(
+    `SELECT id, "authorId", title, content, active
+    FROM posts;`
+  );
+  return rows;
+}
+
 // helper function for getting all users
 async function getAllUsers() {
   const { rows } = await client.query(
@@ -54,7 +63,7 @@ async function getAllUsers() {
   return rows;
 }
 
-// updating posts function (UNFINISHED TEMPLATE which mimics updateUser func)
+// updating posts function
 async function updatePost(id, fields = {}) {
   const setString = Object.keys(fields)
     .map((key, index) => `${key}=$${index + 1}`)
@@ -97,12 +106,44 @@ async function updateUser(id, fields = {}) {
   }
 }
 
+// helper function for getting post by user ID
+async function getPostsByUser(userId) {
+  try {
+    const { rows } = await client.query(`
+      SELECT * FROM posts
+      WHERE "authorId"=${userId};
+    `);
+
+    return rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// helper function for getting user by user ID
+async function getUserById(userId) {
+  const {
+    rows: [user],
+  } = await client.query(`
+  SELECT id, username, name, location, active
+  FROM users
+  WHERE id=${userId};
+  `);
+
+  user.posts = await getPostsByUser(userId);
+
+  return user;
+}
+
 // nodes version of "exporting"
 module.exports = {
   client,
+  getAllPosts,
   getAllUsers,
   createUser,
   updateUser,
   createPost,
   updatePost,
+  getPostsByUser,
+  getUserById,
 };
