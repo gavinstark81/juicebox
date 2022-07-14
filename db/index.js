@@ -4,15 +4,14 @@ const client = new Client("postgres://localhost:5432/juicebox-dev");
 // creating posts function (NEEDS FIXING STILL)
 async function createPost({ authorId, title, content }) {
   try {
-    const post = await client.query(
+    const {
+      rows: [post],
+    } = await client.query(
       `
-    CREATE TABLE posts(
-      id SERIAL PRIMARY KEY,
-      "authorId" INTEGER REFERENCES users(id) NOT NULL,
-      title VARCHAR(255) NOT NULL,
-      content TEXT NOT NULL,
-      active BOOLEAN DEFAULT true
-      );
+    
+      INSERT INTO posts("authorId", title, content)
+      VALUES ($1, $2, $3)
+      RETURNING *;
       `,
       [authorId, title, content]
     );
@@ -56,8 +55,21 @@ async function getAllUsers() {
 }
 
 // updating posts function (UNFINISHED TEMPLATE which mimics updateUser func)
-async function updatePost(id, { title, content, active }) {
+async function updatePost(id, fields = {}) {
+  const setString = Object.keys(fields)
+    .map((key, index) => `${key}=$${index + 1}`)
+    .join(", ");
+  if (setString.length === 0) {
+    return;
+  }
   try {
+    const {
+      rows: [post],
+    } = await client.query(
+      `UPDATE posts SET ${setString} WHERE id=${id} RETURNING *`,
+      Object.values(fields)
+    );
+    return post;
   } catch (error) {
     throw error;
   }
@@ -72,7 +84,6 @@ async function updateUser(id, fields = {}) {
   if (setString.length === 0) {
     return;
   }
-
   try {
     const {
       rows: [user],

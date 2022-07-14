@@ -5,6 +5,7 @@ const {
   createUser,
   updateUser,
   createPost,
+  updatePost,
 } = require("./index");
 
 // dropping tables function
@@ -39,6 +40,13 @@ async function createTables() {
       active BOOLEAN DEFAULT true
       );
       `);
+    await client.query(`
+      CREATE TABLE posts(
+        id SERIAL PRIMARY KEY,
+        "authorId" INTEGER REFERENCES users(id) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        active BOOLEAN DEFAULT true);`);
 
     console.log("Finished building tables!");
   } catch (error) {
@@ -99,19 +107,29 @@ async function testDB() {
   try {
     console.log("Starting to test database...");
 
-    const users = await getAllUsers();
-    console.log("getAllUsers:", users);
+    // const users = await getAllUsers();
+    // console.log("getAllUsers:", users);
     // const updatedUser = await updateUser(2, {
-    //   name: "johnny",
-    //   location: "brazil",
+    //   name: "johnny2",
+    //   location: "brazil nuts",
     // });
+
     const newPost = await createPost({
-      authorId: 1,
-      title: "BestTitleEver",
-      content: "very descriptive content for describing descriptions.",
+      authorId: 3,
+      title: "super awesome title",
+      content: "i really love to code",
     });
-    console.log("this is the new post", newPost);
+    console.log("here be the new post", newPost);
+
+    const updatedPostResult = await updatePost(newPost.id, {
+      title: "new test title",
+      content: "wow this is a great description",
+    });
+
+    console.log("this is the up dated post", updatedPostResult);
+
     // console.log("this is updated user", updatedUser);
+
     console.log("Finished database tests!");
   } catch (error) {
     console.error("Error testing database!");
