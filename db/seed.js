@@ -65,8 +65,9 @@ async function createTables() {
 
     await client.query(`
         CREATE TABLE post_tags(
-          "postId" INTEGER REFERENCES posts(id) UNIQUE NOT NULL,
-          "tagId" INTEGER REFERENCES tags(id) UNIQUE NOT NULL
+          "postId" INTEGER REFERENCES posts(id),
+          "tagId" INTEGER REFERENCES tags(id),
+          UNIQUE ("postId", "tagId")
             );`);
     console.log("Finished building tables!");
   } catch (error) {
@@ -109,30 +110,30 @@ async function createInitialPosts() {
   }
 }
 
-// createInitialTags func
-async function createInitialTags() {
-  try {
-    console.log("Starting to create tags...");
+// // createInitialTags func
+// async function createInitialTags() {
+//   try {
+//     console.log("Starting to create tags...");
 
-    const [happy, sad, inspo, catman] = await createTags([
-      "#happy",
-      "#worst-day-ever",
-      "#youcandoanything",
-      "#catmandoeverything",
-    ]);
+//     const [happy, sad, inspo, catman] = await createTags([
+//       "#happy",
+//       "#worst-day-ever",
+//       "#youcandoanything",
+//       "#catmandoeverything",
+//     ]);
 
-    const [postOne, postTwo, postThree] = await getAllPosts();
+//     const [postOne, postTwo, postThree] = await getAllPosts();
 
-    await addTagsToPost(postOne.id, [happy, inspo]);
-    await addTagsToPost(postTwo.id, [sad, inspo]);
-    await addTagsToPost(postThree.id, [happy, catman, inspo]);
+//     await addTagsToPost(postOne.id, [happy, inspo]);
+//     await addTagsToPost(postTwo.id, [sad, inspo]);
+//     await addTagsToPost(postThree.id, [happy, catman, inspo]);
 
-    console.log("Finished creating tags!");
-  } catch (error) {
-    console.log("Error creating tags!");
-    throw error;
-  }
-}
+//     console.log("Finished creating tags!");
+//   } catch (error) {
+//     console.log("Error creating tags!");
+//     throw error;
+//   }
+// }
 
 // function for creating initial users
 async function createInitialUsers() {
