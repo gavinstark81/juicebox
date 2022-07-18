@@ -16,4 +16,6 @@ postsRouter.get("/", async (req, res) => {
   });
 });
 
+postsRouter.get("/:id", async (req, res, next) => {});
+
 module.exports = postsRouter;

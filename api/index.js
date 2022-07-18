@@ -34,9 +34,11 @@ apiRouter.use(async (req, res, next) => {
 });
 
 const usersRouter = require("./users");
+// This will be at /api/users
 apiRouter.use("/users", usersRouter);
 
 const postsRouter = require("./posts");
+// This will be at /api/posts
 apiRouter.use("/posts", postsRouter);
 
 apiRouter.use((error, req, res, next) => {

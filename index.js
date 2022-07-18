@@ -1,16 +1,22 @@
-const PORT = 3000;
 const express = require("express");
-const server = express();
 const morgan = require("morgan");
-server.use(morgan("dev"));
+const PORT = 3000;
+const server = express();
 
-server.use(express.json());
-
-const apiRouter = require("./api");
-server.use("/api", apiRouter);
+// --- Importing our PG Client --------
 const { client } = require("./db");
 client.connect();
 
+// --- MIDDLE WARE --------
+server.use(morgan("dev"));
+server.use(express.json());
+
+// --- ROUTES --------
+const apiRouter = require("./api");
+// all routes will now have /api/ on their URL
+server.use("/api", apiRouter);
+
+// ---- Server Listens
 server.listen(PORT, () => {
   console.log("the server is up on port", PORT);
 });

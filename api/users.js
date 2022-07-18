@@ -6,15 +6,14 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 
 // IN PROGRESS "Giving them a Token part 2 of part 2" -->
-const token = jwt.sign(
-  {
-    id,
-    username, // from the user object?
-  },
-  process.env.JWT_SECRET
-);
-// <-- IN PROGRESS
 
+usersRouter.use((req, res, next) => {
+  console.log("a request is being made to /users");
+
+  next();
+});
+
+// POST /api/users/login
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
 
@@ -31,7 +30,8 @@ usersRouter.post("/login", async (req, res, next) => {
 
     if (user && user.password == password) {
       // create token & return to user
-      res.send({ message: "you're logged in!" });
+      const token = jwt.sign(user, JWT_SECRET);
+      res.send({ message: "you're logged in!", token });
     } else {
       next({
         name: "IncorrectCredentialsError",
@@ -42,12 +42,6 @@ usersRouter.post("/login", async (req, res, next) => {
     console.log(error);
     next(error);
   }
-});
-
-usersRouter.use((req, res, next) => {
-  console.log("a request is being made to /users");
-
-  next();
 });
 
 usersRouter.get("/", async (req, res) => {
