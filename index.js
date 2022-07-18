@@ -1,5 +1,3 @@
-// hoopity hoppidty
-// Yep another test again!
 const PORT = 3000;
 const express = require("express");
 const server = express();
