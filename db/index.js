@@ -172,6 +172,26 @@ async function getUserById(userId) {
   return user;
 }
 
+// helper function for getting user by username
+async function getUserByUsername(username) {
+  try {
+    const {
+      rows: [user],
+    } = await client.query(
+      `
+      SELECT *
+      FROM users
+      WHERE username=$1;
+    `,
+      [username]
+    );
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // getPostById
 async function getPostById(postId) {
   try {
@@ -323,4 +343,5 @@ module.exports = {
   addTagsToPost,
   getPostById,
   getPostsByTagName,
+  getUserByUsername,
 };

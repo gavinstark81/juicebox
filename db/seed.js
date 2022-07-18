@@ -13,6 +13,7 @@ const {
   getPostById,
   addTagsToPost,
   getPostsByTagName,
+  getUserByUsername,
 } = require("./index");
 
 // dropping tables function
