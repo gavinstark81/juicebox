@@ -1,6 +1,7 @@
 const express = require("express");
-const { getUserById } = require("../db");
 const apiRouter = express.Router();
+
+const { getUserById } = require("../db");
 require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
@@ -21,6 +22,11 @@ apiRouter.use(async (req, res, next) => {
       if (id) {
         req.user = await getUserById(id);
         next();
+      } else {
+        next({
+          name: "AuthorizationHeaderError",
+          message: "Authorization token malformed",
+        });
       }
     } catch ({ name, message }) {
       next({ name, message });
@@ -35,7 +41,7 @@ apiRouter.use(async (req, res, next) => {
 
 apiRouter.use((req, res, next) => {
   if (req.user) {
-    console.log("user is set:", req.user);
+    // console.log("user is set:", req.user);
   }
 
   next();
@@ -48,6 +54,10 @@ apiRouter.use("/users", usersRouter);
 const postsRouter = require("./posts");
 // This will be at /api/posts
 apiRouter.use("/posts", postsRouter);
+
+const tagsRouter = require("./tags");
+//this will be at /api/tags
+apiRouter.use("/tags", tagsRouter);
 
 apiRouter.use((error, req, res, next) => {
   res.send({

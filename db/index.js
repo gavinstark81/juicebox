@@ -1,5 +1,13 @@
 const { Client } = require("pg");
-const client = new Client("postgres://localhost:5432/juicebox-dev");
+
+const client = new Client({
+  connectionString:
+    process.env.DATABASE_URL || "postgres://localhost:5432/juicebox-dev",
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : undefined,
+});
 
 // creating posts function
 async function createPost({ authorId, title, content, tags = [] }) {
@@ -308,6 +316,19 @@ async function addTagsToPost(postId, tagList) {
   }
 }
 
+async function getAllTags() {
+  try {
+    const { rows } = await client.query(`
+      SELECT * 
+      FROM tags;
+    `);
+
+    return { rows };
+  } catch (error) {
+    throw error;
+  }
+}
+
 // gePostsByTagName function
 async function getPostsByTagName(tagName) {
   try {
@@ -344,4 +365,5 @@ module.exports = {
   getPostById,
   getPostsByTagName,
   getUserByUsername,
+  getAllTags,
 };

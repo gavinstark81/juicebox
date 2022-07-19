@@ -16,7 +16,7 @@ const apiRouter = require("./api");
 // all routes will now have /api/ on their URL
 server.use("/api", apiRouter);
 
-// ---- Server Listens
+// ---- Server Listens -----
 server.listen(PORT, () => {
   console.log("the server is up on port", PORT);
 });
